@@ -8,7 +8,14 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace Negocio.DAO {
+    /// <summary>
+    /// Classe responsável por controlar todas as informações da tabela Pessoa.
+    /// </summary>
     public class PessoaDAO {
+        /// <summary>
+        /// Insere uma Pessoa no banco de dados.
+        /// </summary>
+        /// <param name="pessoa">Valores a serem inseridos.</param>
         public void Insert(Pessoa pessoa) {
             NpgsqlCommand cmd = new NpgsqlCommand();
             cmd.CommandType = CommandType.Text;
@@ -22,6 +29,10 @@ namespace Negocio.DAO {
             Conexao.CRUD(cmd);
         }
 
+        /// <summary>
+        /// Altera uma Pessoa existente no banco de dados.
+        /// </summary>
+        /// <param name="pessoa">Valores a serem alterados.</param>
         public void Update(Pessoa pessoa) {
             NpgsqlCommand cmd = new NpgsqlCommand();
             cmd.CommandType = CommandType.Text;
@@ -36,6 +47,10 @@ namespace Negocio.DAO {
             Conexao.CRUD(cmd);
         }
 
+        /// <summary>
+        /// Apaga uma Pessoa existente.
+        /// </summary>
+        /// <param name="pessoa">Pessoa a ser apagada.</param>
         public void Delete(Pessoa pessoa) {
             NpgsqlCommand cmd = new NpgsqlCommand();
             cmd.CommandType = CommandType.Text;
@@ -46,6 +61,11 @@ namespace Negocio.DAO {
             Conexao.CRUD(cmd);
         }
 
+        /// <summary>
+        /// Obtém uma Pessoa do banco de dados.
+        /// </summary>
+        /// <param name="id">Código identificador da Pessoa.</param>
+        /// <returns>Pessoa encontrada.</returns>
         public Pessoa Select(int id) {
             NpgsqlCommand cmd = new NpgsqlCommand();
             cmd.CommandType = CommandType.Text;
@@ -60,8 +80,8 @@ namespace Negocio.DAO {
 
                 p.ID = id;
                 p.Nome = (String) dr["Nome"];
-                p.CPF = (long) dr["CPF"];
-                p.CNPJ = (long) dr["CNPJ"];
+                p.CPF = (String) (dr["CPF"] + "");
+                p.CNPJ = (String) (dr["CNPJ"] + "");
                 p.Email = (String) dr["Email"];
             } else {
                 p = null;
@@ -70,13 +90,18 @@ namespace Negocio.DAO {
             return p;
         }
 
+        /// <summary>
+        /// Retorna Pessoas com certo nome.
+        /// </summary>
+        /// <param name="nome">Valor a ser usado pela clausula like.</param>
+        /// <returns>Pessoas encontradas.</returns>
         public IList<Pessoa> Select(String nome) {
             NpgsqlCommand cmd = new NpgsqlCommand();
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "SELECT * FROM Pessoa LIKE Nome = @Nome";
+            cmd.CommandText = "SELECT * FROM Pessoa WHERE Nome LIKE @Nome";
+            cmd.Parameters.AddWithValue("@Nome", "%" + nome + "%");
 
             IList<Pessoa> pessoas = new List<Pessoa>();
-            cmd.Parameters.AddWithValue("@Nome", "%" + nome + "%");
             NpgsqlDataReader dr = Conexao.Select(cmd);
 
             if (dr.HasRows) {
@@ -85,8 +110,8 @@ namespace Negocio.DAO {
 
                     p.ID = (int) dr["ID"];
                     p.Nome = (String) dr["Nome"];
-                    p.CPF = (long) dr["CPF"];
-                    p.CNPJ = (long) dr["CNPJ"];
+                    p.CPF = (String) (dr["CPF"] + "");
+                    p.CNPJ = (String) (dr["CNPJ"] + "");
                     p.Email = (String) dr["Email"];
 
                     pessoas.Add(p);
