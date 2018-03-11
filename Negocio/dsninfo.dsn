@@ -1,0 +1,6 @@
+[ODBC]
+USER ID=postgres
+PASSWORD=gabriel435
+PORT=5432
+SERVER=127.0.0.1
+DATABASE=HomePizza
